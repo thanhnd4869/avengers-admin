@@ -7,7 +7,7 @@ import { FilterTabs, ListState, Pagination, StatusPill } from "@components/ListC
 import Modal from "@components/Modal";
 import { Notice, PageHeading, RefreshButton } from "@components/PageParts";
 import { useApi } from "@hooks/useApi";
-import { getPayments, markPaymentRefunded } from "@services/adminService";
+import { getPayments, markPaymentRefunded, refundPaymentViaVnpay } from "@services/adminService";
 import {
   formatDateTime,
   formatMoney,
@@ -41,7 +41,7 @@ export default function PaymentsPage() {
       <PageHeading
         eyebrow="SALES"
         title="Payments"
-        description="VNPay attempts. A refund owed is paid back by hand, then recorded here."
+        description="VNPay attempts and refunds owed. Refunds can be sent to VNPay or recorded after an external refund."
         actions={
           <RefreshButton
             disabled={loading}
@@ -129,10 +129,39 @@ export default function PaymentsPage() {
                         ) : null}
                         {payment.refundedAt ? (
                           <span className="cell-sub">
-                            Refunded {formatDateTime(payment.refundedAt)}
+                            {payment.refundMethod === "vnpay"
+                              ? "Refunded via VNPay"
+                              : "Refunded manually"}{" "}
+                            {formatDateTime(payment.refundedAt)}
                             {payment.refundNote ? ` · ${payment.refundNote}` : ""}
                           </span>
                         ) : null}
+                        {payment.refundProviderTransactionNo ? (
+                          <span className="cell-sub">
+                            Refund transaction #{payment.refundProviderTransactionNo}
+                          </span>
+                        ) : null}
+                        {payment.refundStatus === "processing" ? (
+                          <span className="cell-sub">VNPay refund processing</span>
+                        ) : null}
+                        {payment.refundStatus === "unknown" ? (
+                          <span className="cell-sub">
+                            Refund result unknown — reconcile with VNPay before retrying.
+                          </span>
+                        ) : null}
+                        {payment.refundStatus === "failed" && payment.refundError ? (
+                          <span className="cell-sub">VNPay: {payment.refundError}</span>
+                        ) : null}
+                        {payment.refundAttempts?.map((attempt, index) => (
+                          <span
+                            className="cell-sub"
+                            key={`${attempt.requestId ?? attempt.method}-${index}`}
+                          >
+                            {attempt.method === "vnpay" ? "VNPay" : "Manual"} {attempt.status}
+                            {attempt.responseCode ? ` · code ${attempt.responseCode}` : ""}
+                            {attempt.error ? ` · ${attempt.error}` : ""}
+                          </span>
+                        ))}
                       </td>
                       <td className="actions-col">
                         {displayStatus === "refund_required" ? (
@@ -141,7 +170,7 @@ export default function PaymentsPage() {
                             className="secondary-button compact"
                             onClick={() => setRefunding(payment)}
                           >
-                            <Icon name="refund" size={11} /> Mark refunded
+                            <Icon name="refund" size={11} /> Process refund
                           </button>
                         ) : null}
                       </td>
@@ -161,7 +190,11 @@ export default function PaymentsPage() {
           onSaved={(updated) => {
             setOverrides((current) => ({ ...current, [updated.id]: updated }));
             setRefunding(null);
-            setNotice(`Refund of ${formatMoney(updated.amount)} recorded.`);
+            setNotice(
+              updated.refundMethod === "vnpay"
+                ? `VNPay refund of ${formatMoney(updated.amount)} completed.`
+                : `Manual refund of ${formatMoney(updated.amount)} recorded.`,
+            );
           }}
         />
       ) : null}
@@ -174,12 +207,21 @@ function RefundModal({ payment, onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(event) {
-    event.preventDefault();
+  async function submit(event, method = "vnpay") {
+    event?.preventDefault();
+    if (
+      method === "manual" &&
+      !window.confirm("Confirm that this payment has already been refunded outside the system?")
+    ) {
+      return;
+    }
     setSaving(true);
     setError("");
     try {
-      const { data } = await markPaymentRefunded(payment.id, note);
+      const { data } =
+        method === "vnpay"
+          ? await refundPaymentViaVnpay(payment.id, note)
+          : await markPaymentRefunded(payment.id, note);
       onSaved(data);
     } catch (cause) {
       setError(cause.message);
@@ -189,15 +231,33 @@ function RefundModal({ payment, onClose, onSaved }) {
 
   return (
     <Modal
-      title="Record refund"
+      title="Refund payment"
       onClose={onClose}
       footer={
         <>
           <button type="button" className="secondary-button" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" form="refund-form" className="primary-button" disabled={saving}>
-            <Icon name="refund" size={12} /> {saving ? "Saving…" : "Mark refunded"}
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={saving}
+            onClick={() => submit(null, "manual")}
+          >
+            Record manual refund
+          </button>
+          <button
+            type="submit"
+            form="refund-form"
+            className="primary-button"
+            disabled={
+              saving ||
+              !payment.providerTransactionNo ||
+              !payment.paidAt ||
+              ["unknown", "processing"].includes(payment.refundStatus)
+            }
+          >
+            <Icon name="refund" size={12} /> {saving ? "Sending…" : "Refund via VNPay"}
           </button>
         </>
       }
@@ -211,15 +271,24 @@ function RefundModal({ payment, onClose, onSaved }) {
           <dd>{formatMoney(payment.amount)}</dd>
           <dt>Reason</dt>
           <dd>{payment.refundReason ?? "—"}</dd>
+          <dt>VNPay transaction</dt>
+          <dd className="mono">{payment.providerTransactionNo ?? "Unavailable"}</dd>
         </dl>
         <Notice tone="warning">
-          This only records the refund. Pay the money back first, in the VNPay merchant portal or by
-          bank transfer.
+          VNPay will be asked to refund the full payment amount. If the request times out, check the
+          VNPay merchant portal before retrying. Use the manual option only after confirming the
+          refund was completed externally.
         </Notice>
+        {payment.refundStatus === "unknown" || payment.refundStatus === "processing" ? (
+          <Notice>
+            Automatic retry is blocked while the previous result is unresolved. Reconcile this
+            transaction with VNPay first.
+          </Notice>
+        ) : null}
         <FormField
           id="refund-note"
           label="Note"
-          hint="Optional: transfer reference, who handled it."
+          hint="Optional audit note. For manual refunds, include the external transaction reference."
         >
           <textarea
             id="refund-note"

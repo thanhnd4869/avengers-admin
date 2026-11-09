@@ -27,6 +27,10 @@ export function markPaymentRefunded(id, note) {
   return apiClient.post(`/admin/payments/${encodeURIComponent(id)}/refund`, { note });
 }
 
+export function refundPaymentViaVnpay(id, note) {
+  return apiClient.post(`/admin/payments/${encodeURIComponent(id)}/refund/vnpay`, { note });
+}
+
 export function getUsers({ page = 1, limit = 20, role, q } = {}) {
   return apiClient.get("/admin/users", { params: params({ page, limit, role, q }) });
 }
@@ -81,8 +85,32 @@ export function getPlatforms() {
   return apiClient.get("/admin/platforms");
 }
 
+export function createPlatform(platform) {
+  return apiClient.post("/admin/platforms", platform);
+}
+
+export function updatePlatform(id, changes) {
+  return apiClient.patch(`/admin/platforms/${encodeURIComponent(id)}`, changes);
+}
+
+export function deletePlatform(id) {
+  return apiClient.delete(`/admin/platforms/${encodeURIComponent(id)}`);
+}
+
 export function getProductCategories() {
   return apiClient.get("/admin/product-categories");
+}
+
+export function createProductCategory(category) {
+  return apiClient.post("/admin/product-categories", category);
+}
+
+export function updateProductCategory(id, changes) {
+  return apiClient.patch(`/admin/product-categories/${encodeURIComponent(id)}`, changes);
+}
+
+export function deleteProductCategory(id) {
+  return apiClient.delete(`/admin/product-categories/${encodeURIComponent(id)}`);
 }
 
 export function getContactMessages({ page = 1, limit = 20, status } = {}) {
@@ -115,6 +143,18 @@ export function getPostCategories() {
   return apiClient.get("/admin/post-categories");
 }
 
+export function createPostCategory(category) {
+  return apiClient.post("/admin/post-categories", category);
+}
+
+export function updatePostCategory(id, changes) {
+  return apiClient.patch(`/admin/post-categories/${encodeURIComponent(id)}`, changes);
+}
+
+export function deletePostCategory(id) {
+  return apiClient.delete(`/admin/post-categories/${encodeURIComponent(id)}`);
+}
+
 export function getPosts({ page = 1, limit = 20, published, categoryId, q } = {}) {
   return apiClient.get("/admin/posts", {
     params: params({ page, limit, published, categoryId, q }),
@@ -143,4 +183,60 @@ export function getComments({ page = 1, limit = 20, postId, q } = {}) {
 
 export function deleteComment(id) {
   return apiClient.delete(`/admin/comments/${encodeURIComponent(id)}`);
+}
+
+export function getPages() {
+  return apiClient.get("/admin/pages");
+}
+
+export function updatePage(slug, changes) {
+  return apiClient.patch(`/admin/pages/${encodeURIComponent(slug)}`, changes);
+}
+
+export function getGalleries() {
+  return apiClient.get("/admin/galleries");
+}
+
+export function createGallery(gallery) {
+  return apiClient.post("/admin/galleries", gallery);
+}
+
+export function updateGallery(id, changes) {
+  return apiClient.patch(`/admin/galleries/${encodeURIComponent(id)}`, changes);
+}
+
+export function deleteGallery(id) {
+  return apiClient.delete(`/admin/galleries/${encodeURIComponent(id)}`);
+}
+
+export function getMedia() {
+  return apiClient.get("/admin/media");
+}
+
+export function createMedia(media) {
+  return apiClient.post("/admin/media", media);
+}
+
+export function updateMedia(id, changes) {
+  return apiClient.patch(`/admin/media/${encodeURIComponent(id)}`, changes);
+}
+
+export function deleteMedia(id) {
+  return apiClient.delete(`/admin/media/${encodeURIComponent(id)}`);
+}
+
+export function getSocialLinks() {
+  return apiClient.get("/admin/social-links");
+}
+
+export function createSocialLink(link) {
+  return apiClient.post("/admin/social-links", link);
+}
+
+export function updateSocialLink(id, changes) {
+  return apiClient.patch(`/admin/social-links/${encodeURIComponent(id)}`, changes);
+}
+
+export function deleteSocialLink(id) {
+  return apiClient.delete(`/admin/social-links/${encodeURIComponent(id)}`);
 }

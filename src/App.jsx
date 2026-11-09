@@ -7,6 +7,7 @@ import { useAuth } from "@hooks/useAuth";
 import BannersPage from "@pages/BannersPage";
 import CommentsPage from "@pages/CommentsPage";
 import ContactMessagesPage from "@pages/ContactMessagesPage";
+import ContentCollectionPage from "@pages/ContentCollectionPage";
 import DashboardPage from "@pages/DashboardPage";
 import LoginPage from "@pages/LoginPage";
 import OrderDetailPage from "@pages/OrderDetailPage";
@@ -14,6 +15,7 @@ import OrdersPage from "@pages/OrdersPage";
 import PaymentsPage from "@pages/PaymentsPage";
 import PostEditPage from "@pages/PostEditPage";
 import PostsPage from "@pages/PostsPage";
+import SitePagesPage from "@pages/SitePagesPage";
 import ProductEditPage from "@pages/ProductEditPage";
 import ProductsPage from "@pages/ProductsPage";
 import UserDetailPage from "@pages/UserDetailPage";
@@ -48,6 +50,19 @@ const router = createBrowserRouter([
           { path: "/posts", element: <PostsPage /> },
           { path: "/posts/:id", element: <PostEditPage /> },
           { path: "/comments", element: <CommentsPage /> },
+          { path: "/site-pages", element: <SitePagesPage /> },
+          { path: "/galleries", element: <ContentCollectionPage collection="galleries" /> },
+          { path: "/media", element: <ContentCollectionPage collection="media" /> },
+          { path: "/social-links", element: <ContentCollectionPage collection="social-links" /> },
+          { path: "/platforms", element: <ContentCollectionPage collection="platforms" /> },
+          {
+            path: "/product-categories",
+            element: <ContentCollectionPage collection="product-categories" />,
+          },
+          {
+            path: "/post-categories",
+            element: <ContentCollectionPage collection="post-categories" />,
+          },
         ],
       },
     ],

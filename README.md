@@ -8,8 +8,8 @@ Admin dashboard for the Avengers project, backed by the protected `/admin` API.
 |                  | refunds required, low-stock variants and new messages                |
 | Orders           | Filter by status, search by number/email/name; detail with lines and |
 |                  | payment attempts (key codes are never shown)                         |
-| Payments         | VNPay attempts; record an owed (`refund_required`) refund as paid    |
-|                  | back by hand                                                         |
+| Payments         | VNPay attempts; process owed full refunds through VNPay or record a  |
+|                  | refund already completed manually                                    |
 | Products         | Create and edit games, manage variants and prices, add encrypted     |
 |                  | keys, see stock; publish or hide a game in the shop                  |
 | Users            | Accounts with role, verification, order count and amount paid        |
@@ -17,6 +17,15 @@ Admin dashboard for the Avengers project, backed by the protected `/admin` API.
 | Home banners     | Create, edit, reorder, publish or delete the shop's home slides      |
 | Blog posts       | Write and edit posts by category; publish, hide or delete them       |
 | Comments         | Newest comments across posts, filterable by post; take one down      |
+| FAQ & policies   | Edit and publish the FAQ, refund policy, terms and privacy pages     |
+| Galleries        | Create, order, edit and publish image albums                         |
+| Media library    | Manage screenshot and video items shown in the shop                  |
+| Social links     | Manage the published links in the shop footer                        |
+| Platforms        | Manage product platforms; deletion is blocked while variants use one |
+| Categories       | Manage product and blog categories; deletion is blocked while used   |
+
+Images and media are managed by URL; uploading files is not part of the admin
+console.
 
 ## Requirements
 

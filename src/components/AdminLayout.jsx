@@ -27,6 +27,13 @@ const NAV_GROUPS = [
       { to: "/banners", icon: "banners", label: "Home banners" },
       { to: "/posts", icon: "posts", label: "Blog posts" },
       { to: "/comments", icon: "comments", label: "Comments" },
+      { to: "/site-pages", icon: "posts", label: "FAQ & policies" },
+      { to: "/galleries", icon: "banners", label: "Galleries" },
+      { to: "/media", icon: "banners", label: "Media library" },
+      { to: "/social-links", icon: "users", label: "Social links" },
+      { to: "/platforms", icon: "products", label: "Platforms" },
+      { to: "/product-categories", icon: "products", label: "Product categories" },
+      { to: "/post-categories", icon: "posts", label: "Blog categories" },
     ],
   },
 ];
