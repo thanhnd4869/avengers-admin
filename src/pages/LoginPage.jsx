@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 
+import BrandMark from "@components/BrandMark";
 import Icon from "@components/Icon";
 import { Notice } from "@components/PageParts";
 import { useAuth } from "@hooks/useAuth";
@@ -35,7 +36,7 @@ export default function LoginPage() {
     <div className="login-screen">
       <div className="login-card">
         <div className="login-brand">
-          <span className="brand-mark">A</span>
+          <BrandMark />
           <span>
             AVENGERS<small>ADMIN CONSOLE</small>
           </span>

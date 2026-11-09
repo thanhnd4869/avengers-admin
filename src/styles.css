@@ -78,17 +78,14 @@ button {
   letter-spacing: 0.2em;
 }
 .brand-mark {
-  display: grid;
+  display: block;
+  flex: none;
   width: 36px;
   height: 36px;
-  place-items: center;
-  border-radius: 9px;
-  background: var(--red);
-  color: white;
-  font:
-    700 21px Montserrat,
-    sans-serif;
-  box-shadow: 0 5px 16px #dd163b38;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px #ffffff14,
+    0 5px 16px #dd163b38;
 }
 .nav-label,
 .eyebrow {
@@ -928,7 +925,6 @@ button {
   .brand-mark {
     width: 31px;
     height: 31px;
-    font-size: 18px;
   }
   .nav-label,
   .sidebar-bottom {

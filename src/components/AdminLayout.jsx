@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
 
+import BrandMark from "@components/BrandMark";
 import Icon from "@components/Icon";
 import { Notice } from "@components/PageParts";
 import { useAuth } from "@hooks/useAuth";
@@ -51,7 +52,7 @@ export default function AdminLayout() {
     <div className="admin-shell">
       <aside className="sidebar">
         <NavLink className="brand" to="/dashboard">
-          <span className="brand-mark">A</span>
+          <BrandMark />
           <span>
             AVENGERS<small>ADMIN CONSOLE</small>
           </span>
