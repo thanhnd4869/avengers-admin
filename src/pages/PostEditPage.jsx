@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import FormField, { fieldErrors } from "@components/FormField";
 import Icon from "@components/Icon";
 import { ListState } from "@components/ListControls";
+import MediaInput from "@components/MediaInput";
 import { ArrowLink, BackLink, Notice, PageHeading, PanelHeading } from "@components/PageParts";
 import { useApi } from "@hooks/useApi";
 import {
@@ -198,27 +199,17 @@ function PostEditor({ initial, categories }) {
           </FormField>
           <FormField
             id="imageUrl"
-            label="Cover image URL"
+            label="Cover image"
             error={errors.imageUrl}
+            hint="Paste an image URL or upload a file."
             className="span-2"
           >
-            <div className="image-input">
-              {form.imageUrl ? (
-                <img src={form.imageUrl} alt="" />
-              ) : (
-                <span className="image-placeholder">
-                  <Icon name="posts" size={16} />
-                </span>
-              )}
-              <input
-                id="imageUrl"
-                type="url"
-                value={form.imageUrl}
-                maxLength={2000}
-                placeholder="https://…"
-                onChange={(event) => set("imageUrl", event.target.value)}
-              />
-            </div>
+            <MediaInput
+              id="imageUrl"
+              value={form.imageUrl}
+              placeholderIcon="posts"
+              onChange={(value) => set("imageUrl", value)}
+            />
           </FormField>
           <FormField
             id="publishedAt"

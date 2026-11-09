@@ -3,6 +3,7 @@ import { useState } from "react";
 import FormField, { fieldErrors } from "@components/FormField";
 import Icon from "@components/Icon";
 import { ListState } from "@components/ListControls";
+import MediaInput from "@components/MediaInput";
 import Modal from "@components/Modal";
 import { Notice, PageHeading, RefreshButton } from "@components/PageParts";
 import { useApi } from "@hooks/useApi";
@@ -250,24 +251,19 @@ function BannerModal({ banner, nextSortOrder, onClose, onSaved }) {
             onChange={(event) => set("excerpt", event.target.value)}
           />
         </FormField>
-        <FormField id="imageUrl" label="Image URL" error={errors.imageUrl} className="span-2">
-          <div className="image-input">
-            {form.imageUrl ? (
-              <img src={form.imageUrl} alt="" />
-            ) : (
-              <span className="image-placeholder">
-                <Icon name="banners" size={16} />
-              </span>
-            )}
-            <input
-              id="imageUrl"
-              type="url"
-              value={form.imageUrl}
-              maxLength={2000}
-              placeholder="https://…"
-              onChange={(event) => set("imageUrl", event.target.value)}
-            />
-          </div>
+        <FormField
+          id="imageUrl"
+          label="Image"
+          error={errors.imageUrl}
+          hint="Paste an image URL or upload a file."
+          className="span-2"
+        >
+          <MediaInput
+            id="imageUrl"
+            value={form.imageUrl}
+            placeholderIcon="banners"
+            onChange={(value) => set("imageUrl", value)}
+          />
         </FormField>
         <FormField
           id="linkUrl"

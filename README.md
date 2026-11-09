@@ -24,8 +24,12 @@ Admin dashboard for the Avengers project, backed by the protected `/admin` API.
 | Platforms        | Manage product platforms; deletion is blocked while variants use one |
 | Categories       | Manage product and blog categories; deletion is blocked while used   |
 
-Images and media are managed by URL; uploading files is not part of the admin
-console.
+Every image and video field takes either a pasted URL from any host or a file
+uploaded to Cloudinary (images up to 10 MB, videos up to 100 MB). Files go
+straight from the browser to Cloudinary with a signature from the API, which
+keeps the Cloudinary secret; the **Upload** buttons appear only when the API
+has Cloudinary configured. Replaced or deleted uploads are cleaned up by the
+API once nothing uses them.
 
 ## Requirements
 

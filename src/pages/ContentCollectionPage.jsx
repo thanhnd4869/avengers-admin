@@ -3,6 +3,7 @@ import { useState } from "react";
 import FormField, { fieldErrors } from "@components/FormField";
 import Icon from "@components/Icon";
 import { ListState } from "@components/ListControls";
+import MediaInput, { UploadButton } from "@components/MediaInput";
 import Modal from "@components/Modal";
 import { Notice, PageHeading, RefreshButton } from "@components/PageParts";
 import { useApi } from "@hooks/useApi";
@@ -148,6 +149,15 @@ function toPayload(collection, form) {
   return body;
 }
 
+function altFromFileName(name) {
+  return (
+    name
+      .replace(/\.[^.]+$/, "")
+      .replace(/[-_]+/g, " ")
+      .trim() || "Gallery image"
+  );
+}
+
 const FIELD_LABELS = {
   name: "Name",
   slug: "Slug",
@@ -155,9 +165,9 @@ const FIELD_LABELS = {
   network: "Network key",
   label: "Display label",
   url: "Target URL",
-  imageUrl: "Image URL",
+  imageUrl: "Image",
   imageAlt: "Image alt text",
-  coverUrl: "Cover image URL",
+  coverUrl: "Cover image",
   coverAlt: "Cover alt text",
   images: "Album images",
   sortOrder: "Display order",
@@ -327,6 +337,7 @@ function CollectionModal({ collection, config, item, nextSortOrder, onClose, onS
   const [form, setForm] = useState(() => initialForm(collection, item, nextSortOrder));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [uploadError, setUploadError] = useState("");
   const errors = fieldErrors(error);
 
   function set(field, value) {
@@ -370,8 +381,8 @@ function CollectionModal({ collection, config, item, nextSortOrder, onClose, onS
           key={field}
           id={field}
           label={FIELD_LABELS[field]}
-          error={errors.images}
-          hint="One image per line: URL | alt text."
+          error={errors.images || uploadError}
+          hint="One image per line: URL | alt text. Uploaded files are added as new lines."
           className="span-2"
         >
           <textarea
@@ -379,6 +390,73 @@ function CollectionModal({ collection, config, item, nextSortOrder, onClose, onS
             rows={6}
             value={form.images}
             onChange={(event) => set(field, event.target.value)}
+          />
+          <div className="field-actions">
+            <UploadButton
+              multiple
+              label="Upload images"
+              onError={setUploadError}
+              onUploaded={(uploaded, file) =>
+                setForm((current) => ({
+                  ...current,
+                  images: [
+                    current.images.trimEnd(),
+                    `${uploaded.url} | ${altFromFileName(file.name)}`,
+                  ]
+                    .filter(Boolean)
+                    .join("\n"),
+                }))
+              }
+            />
+          </div>
+        </FormField>
+      );
+    }
+    if (field === "imageUrl" || field === "coverUrl") {
+      return (
+        <FormField
+          key={field}
+          id={field}
+          label={FIELD_LABELS[field]}
+          error={errors[field]}
+          hint="Paste an image URL or upload a file."
+          className="span-2"
+        >
+          <MediaInput id={field} value={form[field]} onChange={(value) => set(field, value)} />
+        </FormField>
+      );
+    }
+    if (field === "url" && collection === "media") {
+      const isVideo = form.type === "video";
+      return (
+        <FormField
+          key={field}
+          id={field}
+          label={isVideo ? "Video" : "Full-size image"}
+          error={errors.url}
+          hint={
+            isVideo
+              ? "A YouTube link, any video page, or an uploaded video file."
+              : "Paste an image URL or upload a file."
+          }
+          className="span-2"
+        >
+          <MediaInput
+            id={field}
+            value={form.url}
+            accept={isVideo ? ["video"] : ["image"]}
+            onChange={(value) => set(field, value)}
+            onUploaded={(uploaded) => {
+              if (form.imageUrl) return;
+              // A screenshot reuses its picture; Cloudinary serves a video's
+              // first frame as an image when the extension is swapped.
+              set(
+                "imageUrl",
+                uploaded.resourceType === "video"
+                  ? uploaded.url.replace(/\.[A-Za-z0-9]+$/, ".jpg")
+                  : uploaded.url,
+              );
+            }}
           />
         </FormField>
       );

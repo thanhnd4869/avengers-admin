@@ -27,6 +27,14 @@ export function markPaymentRefunded(id, note) {
   return apiClient.post(`/admin/payments/${encodeURIComponent(id)}/refund`, { note });
 }
 
+export function getUploadConfig() {
+  return apiClient.get("/admin/uploads");
+}
+
+export function createUploadSignature(resourceType) {
+  return apiClient.post("/admin/uploads/signature", { resourceType });
+}
+
 export function refundPaymentViaVnpay(id, note) {
   return apiClient.post(`/admin/payments/${encodeURIComponent(id)}/refund/vnpay`, { note });
 }

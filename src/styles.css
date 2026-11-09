@@ -1284,7 +1284,12 @@ button {
   align-items: center;
   gap: 12px;
 }
+.image-input input[type="url"] {
+  flex: 1;
+  min-width: 0;
+}
 .image-input img,
+.image-input video,
 .image-placeholder {
   width: 64px;
   height: 38px;
@@ -1298,6 +1303,12 @@ button {
   place-items: center;
   border: 1px dashed #ffffff22;
   color: var(--muted);
+}
+
+.field-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 
 /* Toggle chips, e.g. product categories. */
